@@ -1,0 +1,18 @@
+{
+  "version": 2,
+  "dgSpecHash": "ZgbEFS7D/5FZmmGhuMmlOV+D5W6SdqqjjRPQZLooorriY7WhbwROW+s/npS4oaj55zyPdd37Oa9iv7BE7HWI5w==",
+  "success": true,
+  "projectFilePath": "/home/shradwo/portfolio/StreamTube/backend/AuthApi/AuthApi.csproj",
+  "expectedPackageFiles": [
+    "/home/shradwo/.nuget/packages/microsoft.extensions.apidescription.server/6.0.5/microsoft.extensions.apidescription.server.6.0.5.nupkg.sha512",
+    "/home/shradwo/.nuget/packages/microsoft.identitymodel.abstractions/7.5.2/microsoft.identitymodel.abstractions.7.5.2.nupkg.sha512",
+    "/home/shradwo/.nuget/packages/microsoft.identitymodel.logging/7.5.2/microsoft.identitymodel.logging.7.5.2.nupkg.sha512",
+    "/home/shradwo/.nuget/packages/microsoft.identitymodel.tokens/7.5.2/microsoft.identitymodel.tokens.7.5.2.nupkg.sha512",
+    "/home/shradwo/.nuget/packages/microsoft.openapi/1.2.3/microsoft.openapi.1.2.3.nupkg.sha512",
+    "/home/shradwo/.nuget/packages/swashbuckle.aspnetcore/6.5.0/swashbuckle.aspnetcore.6.5.0.nupkg.sha512",
+    "/home/shradwo/.nuget/packages/swashbuckle.aspnetcore.swagger/6.5.0/swashbuckle.aspnetcore.swagger.6.5.0.nupkg.sha512",
+    "/home/shradwo/.nuget/packages/swashbuckle.aspnetcore.swaggergen/6.5.0/swashbuckle.aspnetcore.swaggergen.6.5.0.nupkg.sha512",
+    "/home/shradwo/.nuget/packages/swashbuckle.aspnetcore.swaggerui/6.5.0/swashbuckle.aspnetcore.swaggerui.6.5.0.nupkg.sha512"
+  ],
+  "logs": []
+}
