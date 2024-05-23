@@ -1,8 +1,20 @@
-import { Component } from '@angular/core';
-import { Subject } from 'rxjs';
-import { VoiceRecognitionService } from '../services/voiceRecognition/voice-recognition.service';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-
+import {
+  Component,
+  OnInit,
+  Inject,
+  ViewChild,
+  ElementRef,
+  OnDestroy,
+  Input,
+  Output,
+  EventEmitter,
+  AfterContentInit,
+  AfterViewInit,
+} from '@angular/core';
+import { PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { Observable } from 'rxjs/internal/Observable';
+declare var webkitSpeechRecognition: any;
 @Component({
   selector: 'app-speech-recognition',
   standalone: true,
@@ -10,63 +22,100 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
   templateUrl: './speech-recognition.component.html',
   styleUrl: './speech-recognition.component.scss',
 })
-export class SpeechRecognitionComponent {
-  constructor() {
-    if (typeof window !== 'undefined') {
-      if ('SpeechRecognition' in window) {
-        console.log('SpeechRecognition is supported');
-      } else if ('webkitSpeechRecognition' in window) {
-        console.log('webkitSpeechRecognition is supported');
-      } else {
-        console.log('SpeechRecognition is not supported');
+export class SpeechRecognitionComponent implements OnInit, AfterViewInit {
+  recognition: any;
+  transcript = '';
+  timeoutId: any;
+  start = false;
+  startRecognition = true;
+  stopClickRecognation = false;
+  @ViewChild('closeModel4') closeModel4!: ElementRef;
+  @ViewChild('modal4') modal4!: ElementRef;
+  @Input({ alias: 'switch', required: true }) switch: boolean = false;
+  @Output('closed') closed: EventEmitter<boolean> = new EventEmitter<boolean>();
+  constructor(@Inject(PLATFORM_ID) private platformId: object) {}
+  ngAfterViewInit(): void {
+    this.modal4.nativeElement.click();
+  }
+
+  ngOnInit(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      const SpeechRecognition =
+        window.SpeechRecognition || webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        console.error('Speech Recognition not supported in this browser.');
+        return;
       }
-    } else {
-      console.log('This is not a browser environment');
+      this.recognition = new SpeechRecognition();
+      this.recognition.interimResults = true;
+      this.recognition.lang = 'ar-SA';
+      this.recognition.addEventListener('result', (event: any) => {
+        this.transcript = Array.from(event.results)
+          .map((result: any) => result[0])
+          .map((result: any) => result.transcript)
+          .join('');
+      });
+    }
+    this.recognition.addEventListener('end', () => {
+      this.close();
+      this.startRecognition = false;
+    });
+    this.recognition.addEventListener('error', (event: any) => {
+      console.error('Speech Recognition error:', event.error);
+    });
+    this.recognition.addEventListener('start', (event: any) => {
+      this.startRecognition = true;
+    });
+
+    this.startListening();
+  }
+
+  startListening(): void {
+    if (this.recognition) {
+      this.recognition.start();
     }
   }
 
-  // public searchForm: FormGroup;
-  // public isUserSpeaking: boolean = false;
-  // constructor(
-  //   private fb: FormBuilder,
-  //   private voiceRecognition: VoiceRecognitionService
-  // ) {
-  //   // Initialize form group.
-  //   this.searchForm = this.fb.group({
-  //     searchText: ['', Validators.required],
-  //   });
-  // }
+  stopListening(): void {
+    if (this.recognition) {
+      this.recognition.stop();
+    }
+  }
+  startListeningButton() {
+    this.start = !this.start;
+    this.startListening();
+  }
 
-  // ngOnInit(): void {
-  //   this.initVoiceInput();
-  // }
+  stopListeningButton() {
+    this.stopClickRecognation = true;
+    this.start = !this.start;
+    this.transcript = '';
+    this.stopListening();
+    this.cancelClose();
+  }
 
-  // /**
-  //  * @description Function to stop recording.
-  //  */
-  // stopRecording() {
-  //   this.voiceRecognition.stop();
-  //   this.isUserSpeaking = false;
-  // }
+  closeModel() {
+    this.closed.emit(true);
+  }
+  ngOnDestroy(): void {
+    this.stopListening();
+    if (this.recognition) {
+      this.recognition = null;
+    }
+  }
+  close(): void {
+    this.timeoutId = setTimeout(() => {
+      this.closeModel4.nativeElement.click();
+    }, 1500);
+  }
 
-  // initVoiceInput() {
-  //   // Subscription for initializing and this will call when user stopped speaking.
-  //   this.voiceRecognition.init().subscribe(() => {
-  //     // User has stopped recording
-  //     // Do whatever when mic finished listening
-  //   });
-
-  //   // Subscription to detect user input from voice to text.
-  //   this.voiceRecognition.speechInput().subscribe((input) => {
-  //     // Set voice text output to
-  //     // Set voice text output to
-  //     this.searchForm.controls['searchText'].setValue(input);
-  //   });
-  // }
-
-  // startRecording() {
-  //   this.isUserSpeaking = true;
-  //   this.voiceRecognition.start();
-  //   this.searchForm.controls['searchText'].reset();
-  // }
+  cancelClose(): void {
+    if (this.timeoutId) {
+      clearTimeout(this.timeoutId);
+      this.timeoutId = null;
+    }
+  }
+  changestartRecognition() {
+    this.startRecognition = false;
+  }
 }

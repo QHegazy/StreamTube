@@ -19,11 +19,12 @@ import {
 import { themeChange } from 'theme-change';
 import { SharedModule } from '../shared/shared.module';
 import { GlobalValuesService } from '../shared/globalValues/global-values.service';
+import { SpeechRecognitionComponent } from '../speech-recognition/speech-recognition.component';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [FontAwesomeModule, SharedModule],
+  imports: [FontAwesomeModule, SharedModule, SpeechRecognitionComponent],
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.scss',
 })
@@ -35,6 +36,7 @@ export class NavbarComponent implements OnInit {
   faTowerBroadcast = faTowerBroadcast;
   theme!: string;
   hidden = true;
+  openSpeech: boolean = false;
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
     private globalValues: GlobalValuesService
@@ -61,5 +63,8 @@ export class NavbarComponent implements OnInit {
   private isHiddenElement(targetElement: HTMLElement): boolean {
     const menuElement = document.querySelector('.create') as HTMLElement;
     return menuElement.contains(targetElement);
+  }
+  openListeningDilog() {
+    this.openSpeech = true;
   }
 }

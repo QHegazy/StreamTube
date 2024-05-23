@@ -41,7 +41,7 @@
       <button class="btn btn-primary rounded-r-full">
         <span class="mt-1">Search</span>
       </button>
-      <button class="btn rounded-full ml-4">
+      <button class="btn rounded-full ml-4" (click)="openListeningDilog()">
         <fa-icon [icon]="faMicrophone" size="xl"></fa-icon>
       </button>
     </div>
@@ -147,3 +147,7 @@
     </section>
   </div>
 </div>
+@if (openSpeech) {
+<app-speech-recognition [switch]="openSpeech" (closed)="openSpeech = false">
+</app-speech-recognition>
+}
