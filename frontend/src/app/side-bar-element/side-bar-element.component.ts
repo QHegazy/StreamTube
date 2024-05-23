@@ -11,7 +11,5 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 export class SideBarElementComponent {
   @Input({ required: true, alias: 'info' }) info!: Array<any>;
   @Input({ alias: 'header' }) header!: string;
-  constructor() {
-    console.log(this.info);
-  }
+  constructor() {}
 }

@@ -121,6 +121,5 @@ export class SidebarComponent implements OnInit, AfterViewInit {
     // if (this.openSidebar) {
     //   this.aside.nativeElement.classList.add('open');
     // }
-    console.log(this.openSidebar());
   }
 }
