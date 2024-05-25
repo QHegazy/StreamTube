@@ -26,7 +26,7 @@ export class SpeechRecognitionComponent implements OnInit, AfterViewInit {
   recognition: any;
   transcript = '';
   timeoutId: any;
-  start = false;
+  isListening = false;
   startRecognition = true;
   stopClickRecognation = false;
   @ViewChild('closeModel4') closeModel4!: ElementRef;
@@ -40,36 +40,45 @@ export class SpeechRecognitionComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) {
-      const SpeechRecognition =
-        window.SpeechRecognition || webkitSpeechRecognition;
-      if (!SpeechRecognition) {
-        console.error('Speech Recognition not supported in this browser.');
-        return;
-      }
-      this.recognition = new SpeechRecognition();
-      this.recognition.interimResults = true;
-      this.recognition.lang = 'ar-SA';
-      this.recognition.addEventListener('result', (event: any) => {
-        this.transcript = Array.from(event.results)
-          .map((result: any) => result[0])
-          .map((result: any) => result.transcript)
-          .join('');
-      });
+      this.initializeSpeechRecognition();
     }
-    this.recognition.addEventListener('end', () => {
-      this.close();
-      this.startRecognition = false;
-    });
-    this.recognition.addEventListener('error', (event: any) => {
-      console.error('Speech Recognition error:', event.error);
-    });
-    this.recognition.addEventListener('start', (event: any) => {
-      this.startRecognition = true;
-    });
-
-    this.startListening();
   }
 
+  private initializeSpeechRecognition(): void {
+    const SpeechRecognition =
+      window.SpeechRecognition || webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      console.error('Speech Recognition not supported in this browser.');
+      return;
+    }
+
+    this.recognition = new SpeechRecognition();
+    this.recognition.interimResults = true;
+    this.recognition.lang = 'ar-EG';
+
+    this.recognition.addEventListener('result', this.onSpeechResult.bind(this));
+    this.recognition.addEventListener('end', this.onSpeechEnd.bind(this));
+    this.recognition.addEventListener('error', this.onSpeechError.bind(this));
+    this.recognition.addEventListener('start', this.onSpeechStart.bind(this));
+    this.startListening();
+  }
+  private onSpeechResult(event: any): void {
+    this.transcript = Array.from(event.results)
+      .map((result: any) => result[0].transcript)
+      .join('');
+  }
+  private onSpeechEnd(): void {
+    this.close();
+    this.startRecognition = false;
+  }
+
+  private onSpeechError(event: any): void {
+    console.error('Speech Recognition error:', event.error);
+  }
+
+  private onSpeechStart(): void {
+    this.startRecognition = true;
+  }
   startListening(): void {
     if (this.recognition) {
       this.recognition.start();
@@ -82,14 +91,15 @@ export class SpeechRecognitionComponent implements OnInit, AfterViewInit {
     }
   }
   startListeningButton() {
-    this.start = !this.start;
+    this.isListening = !this.isListening;
     this.startListening();
   }
 
   stopListeningButton() {
-    this.stopClickRecognation = true;
-    this.start = !this.start;
     this.transcript = '';
+    console.log('stop' + this.isListening);
+    this.stopClickRecognation = true;
+    this.isListening = !this.isListening;
     this.stopListening();
     this.cancelClose();
   }
@@ -100,22 +110,33 @@ export class SpeechRecognitionComponent implements OnInit, AfterViewInit {
   ngOnDestroy(): void {
     this.stopListening();
     if (this.recognition) {
+      this.removeEventListeners();
       this.recognition = null;
     }
   }
+
   close(): void {
     this.timeoutId = setTimeout(() => {
       this.closeModel4.nativeElement.click();
     }, 1500);
   }
 
-  cancelClose(): void {
+  cancelClose(retries: number = 5): void {
     if (this.timeoutId) {
       clearTimeout(this.timeoutId);
       this.timeoutId = null;
+    } else if (retries > 0) {
+      setTimeout(() => {
+        console.log('call' + retries);
+        this.cancelClose(retries - 1);
+      }, 100);
     }
   }
-  changestartRecognition() {
-    this.startRecognition = false;
+
+  removeEventListeners(): void {
+    this.recognition.removeEventListener('result', this.onSpeechResult);
+    this.recognition.removeEventListener('end', this.onSpeechEnd);
+    this.recognition.removeEventListener('error', this.onSpeechError);
+    this.recognition.removeEventListener('start', this.onSpeechStart);
   }
 }

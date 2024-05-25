@@ -134,7 +134,10 @@
         </ul>
       </div>
       <div class="user">
-        <div class="avatar mx-4 pt-[5px]">
+        <div
+          class="avatar mx-4 pt-[5px] hover:cursor-pointer"
+          (click)="userMenuOpen = !userMenuOpen"
+        >
           <div
             class="w-8 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2"
           >
@@ -142,6 +145,14 @@
               src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg"
             />
           </div>
+        </div>
+
+        <div
+          [classList]="
+            userMenuOpen ? 'absolute top-14 right-10 z-10' : 'none-display'
+          "
+        >
+          <app-user-menu class="user-menu"></app-user-menu>
         </div>
       </div>
     </section>
