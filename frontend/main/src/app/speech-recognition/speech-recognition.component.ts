@@ -54,7 +54,7 @@ export class SpeechRecognitionComponent implements OnInit, AfterViewInit {
 
     this.recognition = new SpeechRecognition();
     this.recognition.interimResults = true;
-    this.recognition.lang = 'ar-EG';
+    this.recognition.lang = 'en-US';
 
     this.recognition.addEventListener('result', this.onSpeechResult.bind(this));
     this.recognition.addEventListener('end', this.onSpeechEnd.bind(this));
